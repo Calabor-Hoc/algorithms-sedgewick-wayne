@@ -19,14 +19,14 @@ public class Exercise18_LocalMinimum {
         int[] array5 = {10, 20};
         int[] array6 = {7, 20, 30};
 
-        int localMinimum1 = localMinimum(array1);
-        int localMinimum2 = localMinimum(array2);
-        int localMinimum3 = localMinimum(array3);
-        int localMinimum4 = localMinimum(array4);
-        int localMinimum5 = localMinimum(array5);
-        int localMinimum6 = localMinimum(array6);
+        int localMinimum1 = localMinimum2(array1);
+        int localMinimum2 = localMinimum2(array2);
+        int localMinimum3 = localMinimum2(array3);
+        int localMinimum4 = localMinimum2(array4);
+        int localMinimum5 = localMinimum2(array5);
+        int localMinimum6 = localMinimum2(array6);
 
-        StdOut.println("Local Minimum: " + localMinimum1 + " Expected: -9 or -20");
+        StdOut.println("Local Minimum: " + localMinimum1 + " Expected: -9 or -20 or 21");
         StdOut.println("Local Minimum: " + localMinimum2 + " Expected: 4 or -4 or 2");
         StdOut.println("Local Minimum: " + localMinimum3 + " Expected: -8");
         StdOut.println("Local Minimum: " + localMinimum4 + " Expected: 5");
@@ -84,6 +84,76 @@ public class Exercise18_LocalMinimum {
             }
         }
 
+        return NOT_FOUND;
+    }
+
+    private static int localMinimum2(int[] array) {
+        if (array == null || array.length == 0) {
+            return NOT_FOUND;
+        }
+        int low =0;
+        int high = array.length;
+        int mid;
+        while (low <= high) {
+            mid = low + (high - low) / 2;
+
+            if (array.length == 1) {
+                return array[0];
+            }
+
+            if (mid == 0 &&  array[mid] < array[mid + 1]) {
+                return array[mid];
+            }
+
+            if (mid == array.length - 1 && array[mid] < array[mid - 1]) {
+                return array[mid];
+            }
+
+            if (array[mid] < array[mid - 1] && array[mid] < array[mid + 1]) {
+                return array[mid];
+            } else if (array[mid] > array[mid - 1]) {
+                high = mid;
+                continue;
+            } else if (array[mid] > array[mid + 1]) {
+                low = mid + 1;
+                continue;
+            }
+        }
+        return NOT_FOUND;
+    }
+
+    private static int localMaximumReturnIndex(int[] nums) {
+        if (nums == null || nums.length == 0) {
+            return NOT_FOUND;
+        }
+        int low =0;
+        int high = nums.length;
+        int mid;
+        while (low <= high) {
+            mid = low + (high - low) / 2;
+
+            if (nums.length == 1) {
+                return 0;
+            }
+
+            if (mid == 0 &&  nums[mid] > nums[mid + 1]) {
+                return mid;
+            }
+
+            if (mid == nums.length - 1 && nums[mid] > nums[mid - 1]) {
+                return mid;
+            }
+
+            if (nums[mid] > nums[mid - 1] && nums[mid] > nums[mid + 1]) {
+                return mid;
+            } else if (nums[mid] < nums[mid - 1]) {
+                high = mid;
+                continue;
+            } else if (nums[mid] < nums[mid + 1]) {
+                low = mid + 1;
+                continue;
+            }
+        }
         return NOT_FOUND;
     }
 
