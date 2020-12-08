@@ -66,7 +66,7 @@ public class Exercise20_IndexSort {
         return array;
     }
 
-    private static int[] indexSort(Comparable[] array) {
+    public static int[] indexSort(Comparable[] array) {
         int[] aux = new int[array.length];
         int[] indexSort = new int[array.length];
 
