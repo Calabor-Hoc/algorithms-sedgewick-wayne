@@ -276,12 +276,10 @@ public class MaxPQ_My<Key extends Comparable<Key>> implements Iterable<Key> {
 	 * @param args the command-line arguments
 	 */
 	public static void main(String[] args) {
-		final Comparable<Double>[] doubleArray = ArrayGenerator.generateRandomArray(50);
 
-		MaxPQ_My<Double> pq = new MaxPQ_My<>();
-		for (Comparable<Double> d : doubleArray) {
-			pq.insert((Double) d);
-		}
+		final Double[] doubleArr = (Double[]) ArrayGenerator.generateRandomArray(50);
+
+		MaxPQ_My<Double> pq = new MaxPQ_My<>(doubleArr);
 		StdOut.println("(" + pq.size() + " left on pq)");
 	}
 

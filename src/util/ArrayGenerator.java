@@ -28,8 +28,8 @@ public class ArrayGenerator {
         return allArrays;
     }
 
-    public static Comparable[] generateRandomArray(int length) {
-        Comparable[] array = new Comparable[length];
+    public static Comparable<Double>[] generateRandomArray(int length) {
+        Comparable<Double>[] array = new Double[length];
 
         for(int i = 0; i < length; i++) {
             array[i] = StdRandom.uniform();
