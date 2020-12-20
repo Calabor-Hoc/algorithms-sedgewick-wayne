@@ -1,6 +1,5 @@
 package chapter2.section4;
 
-import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
 import util.ArrayGenerator;
 
@@ -277,9 +276,12 @@ public class MaxPQ_My<Key extends Comparable<Key>> implements Iterable<Key> {
 	 * @param args the command-line arguments
 	 */
 	public static void main(String[] args) {
-		final Comparable<Double>[] ints = ArrayGenerator.generateRandomArray(50);
+		final Comparable<Double>[] doubleArray = ArrayGenerator.generateRandomArray(50);
 
-		MaxPQ_My<String> pq = new MaxPQ_My(ints);
+		MaxPQ_My<Double> pq = new MaxPQ_My<>();
+		for (Comparable<Double> d : doubleArray) {
+			pq.insert((Double) d);
+		}
 		StdOut.println("(" + pq.size() + " left on pq)");
 	}
 
