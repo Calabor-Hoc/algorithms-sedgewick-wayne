@@ -1,36 +1,58 @@
-package chapter2.section4;
+package chapter2.section4.official;
 
 import edu.princeton.cs.algs4.StdOut;
 import util.ArrayGenerator;
 
-import java.lang.reflect.Array;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class MaxPQ_My<Key extends Comparable<Key>> implements Iterable<Key> {
+/**
+ * The {@code MaxPQ} class represents a priority queue of generic keys.
+ * It supports the usual <em>insert</em> and <em>delete-the-maximum</em>
+ * operations, along with methods for peeking at the maximum key,
+ * testing if the priority queue is empty, and iterating through
+ * the keys.
+ * <p>
+ * This implementation uses a <em>binary heap</em>.
+ * The <em>insert</em> and <em>delete-the-maximum</em> operations take
+ * &Theta;(log <em>n</em>) amortized time, where <em>n</em> is the number
+ * of elements in the priority queue. This is an amortized bound
+ * (and not a worst-case bound) because of array resizing operations.
+ * The <em>min</em>, <em>size</em>, and <em>is-empty</em> operations take
+ * &Theta;(1) time in the worst case.
+ * Construction takes time proportional to the specified capacity or the
+ * number of items used to initialize the data structure.
+ * <p>
+ * For additional documentation, see
+ * <a href="https://algs4.cs.princeton.edu/24pq">Section 2.4</a> of
+ * <i>Algorithms, 4th Edition</i> by Robert Sedgewick and Kevin Wayne.
+ *
+ * @param <Key> the generic type of key on this priority queue
+ * @author Robert Sedgewick
+ * @author Kevin Wayne
+ */
+
+public class MaxPQ<Key> implements Iterable<Key> {
 	private Key[] pq;                    // store items at indices 1 to n
 	private int n;                       // number of items on priority queue
 	private Comparator<Key> comparator;  // optional comparator
-	private final Class<?> eleType;  // optional comparator
 
 	/**
 	 * Initializes an empty priority queue with the given initial capacity.
 	 *
 	 * @param initCapacity the initial capacity of this priority queue
 	 */
-	@SuppressWarnings("unchecked")
-	public MaxPQ_My(Class<Key> c, int initCapacity) {
-		this.eleType = c;
-		pq = (Key[]) Array.newInstance(c, initCapacity + 1);
+	public MaxPQ(int initCapacity) {
+		pq = (Key[]) new Object[initCapacity + 1];
 		n = 0;
 	}
 
 	/**
 	 * Initializes an empty priority queue.
 	 */
-	public MaxPQ_My(Class<Key> c) {
-		this(c, 1);
+	public MaxPQ() {
+		this(1);
 	}
 
 	/**
@@ -40,10 +62,9 @@ public class MaxPQ_My<Key extends Comparable<Key>> implements Iterable<Key> {
 	 * @param initCapacity the initial capacity of this priority queue
 	 * @param comparator   the order in which to compare the keys
 	 */
-	public MaxPQ_My(Class<Key> c, int initCapacity, Comparator<Key> comparator) {
-		this.eleType = c;
+	public MaxPQ(int initCapacity, Comparator<Key> comparator) {
 		this.comparator = comparator;
-		pq = (Key[]) Array.newInstance(c, initCapacity + 1);
+		pq = (Key[]) new Object[initCapacity + 1];
 		n = 0;
 	}
 
@@ -52,8 +73,8 @@ public class MaxPQ_My<Key extends Comparable<Key>> implements Iterable<Key> {
 	 *
 	 * @param comparator the order in which to compare the keys
 	 */
-	public MaxPQ_My(Class<Key> c, Comparator<Key> comparator) {
-		this(c, 1, comparator);
+	public MaxPQ(Comparator<Key> comparator) {
+		this(1, comparator);
 	}
 
 	/**
@@ -62,11 +83,11 @@ public class MaxPQ_My<Key extends Comparable<Key>> implements Iterable<Key> {
 	 *
 	 * @param keys the array of keys
 	 */
-	public MaxPQ_My(Class<Key> c, Key[] keys) {
-		this.eleType = c;
+	public MaxPQ(Key[] keys) {
 		n = keys.length;
-		pq = (Key[]) Array.newInstance(c, keys.length + 1);
-		System.arraycopy(keys, 0, pq, 1, n);
+		pq = (Key[]) new Object[keys.length + 1];
+		for (int i = 0; i < n; i++)
+			pq[i + 1] = keys[i];
 		for (int k = n / 2; k >= 1; k--)
 			sink(k);
 		assert isMaxHeap();
@@ -107,9 +128,10 @@ public class MaxPQ_My<Key extends Comparable<Key>> implements Iterable<Key> {
 	// helper function to double the size of the heap array
 	private void resize(int capacity) {
 		assert capacity > n;
-		Key[] temp = (Key[]) Array.newInstance(eleType, capacity);
-		if (n >= 0)
-			System.arraycopy(pq, 1, temp, 1, n);
+		Key[] temp = (Key[]) new Object[capacity];
+		for (int i = 1; i <= n; i++) {
+			temp[i] = pq[i];
+		}
 		pq = temp;
 	}
 
@@ -126,7 +148,7 @@ public class MaxPQ_My<Key extends Comparable<Key>> implements Iterable<Key> {
 			resize(2 * pq.length);
 
 		// add x, and percolate it up to maintain heap invariant
-		pq[++n] = (Key) eleType.cast(x);
+		pq[++n] = x;
 		swim(n);
 		assert isMaxHeap();
 	}
@@ -157,27 +179,20 @@ public class MaxPQ_My<Key extends Comparable<Key>> implements Iterable<Key> {
 
 	private void swim(int k) {
 		while (k > 1 && less(k / 2, k)) {
-			exch(k / 2, k);
+			exch(k, k / 2);
 			k = k / 2;
 		}
 	}
 
 	private void sink(int k) {
-		while (k < n / 2) {
-			int child;
-			final int leftChild = 2 * k;
-			final int rightChild = leftChild + 1;
-			if (rightChild > n) {
-				child = leftChild;
-			} else {
-				child = less(leftChild, rightChild) ? rightChild : leftChild;
-			}
-			if (less(k, child)) {
-				exch(k, child);
-				k = child;
-			} else {
+		while (2 * k <= n) {
+			int j = 2 * k;
+			if (j < n && less(j, j + 1))
+				j++;
+			if (!less(k, j))
 				break;
-			}
+			exch(k, j);
+			k = j;
 		}
 	}
 
@@ -186,7 +201,7 @@ public class MaxPQ_My<Key extends Comparable<Key>> implements Iterable<Key> {
 	 ***************************************************************************/
 	private boolean less(int i, int j) {
 		if (comparator == null) {
-			return pq[i].compareTo(pq[j]) < 0;
+			return ((Comparable<Key>) pq[i]).compareTo(pq[j]) < 0;
 		} else {
 			return comparator.compare(pq[i], pq[j]) < 0;
 		}
@@ -245,15 +260,15 @@ public class MaxPQ_My<Key extends Comparable<Key>> implements Iterable<Key> {
 	private class HeapIterator implements Iterator<Key> {
 
 		// create a new pq
-		private MaxPQ_My<Key> copy;
+		private MaxPQ<Key> copy;
 
 		// add all items to copy of heap
 		// takes linear time since already in heap order so no keys move
 		public HeapIterator() {
 			if (comparator == null)
-				copy = new MaxPQ_My(eleType, size());
+				copy = new MaxPQ<Key>(size());
 			else
-				copy = new MaxPQ_My(eleType, size(), comparator);
+				copy = new MaxPQ<Key>(size(), comparator);
 			for (int i = 1; i <= n; i++)
 				copy.insert(pq[i]);
 		}
@@ -271,7 +286,6 @@ public class MaxPQ_My<Key extends Comparable<Key>> implements Iterable<Key> {
 				throw new NoSuchElementException();
 			return copy.delMax();
 		}
-
 	}
 
 	/**
@@ -281,23 +295,11 @@ public class MaxPQ_My<Key extends Comparable<Key>> implements Iterable<Key> {
 	 */
 	public static void main(String[] args) {
 		final Double[] doubleArr1 = (Double[]) ArrayGenerator.generateRandomArray(50);
-		MaxPQ_My<Double> pq1 = new MaxPQ_My<>(Double.class);
+		MaxPQ<Double> pq1 = new MaxPQ<>();
 		for (Comparable<Double> d : doubleArr1) {
 			pq1.insert((Double) d);
 		}
 		StdOut.println("(" + pq1.size() + " left on pq)");
-		for (Double aDouble : pq1) {
-			StdOut.println("dddd:" + aDouble);
-		}
-
-
-		final Double[] doubleArr2 = (Double[]) ArrayGenerator.generateRandomArray(50);
-
-		MaxPQ_My<Double> pq2 = new MaxPQ_My<>(Double.class, doubleArr2);
-		for (Comparable<Double> d : doubleArr2) {
-			pq2.insert((Double) d);
-		}
-		StdOut.println("(" + pq2.size() + " left on pq)");
 	}
 
 }
