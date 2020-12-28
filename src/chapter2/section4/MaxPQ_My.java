@@ -163,7 +163,7 @@ public class MaxPQ_My<Key extends Comparable<Key>> implements Iterable<Key> {
 	}
 
 	private void sink(int k) {
-		while (k < n / 2) {
+		while (k <= n / 2) {
 			int child;
 			final int leftChild = 2 * k;
 			final int rightChild = leftChild + 1;
@@ -289,15 +289,6 @@ public class MaxPQ_My<Key extends Comparable<Key>> implements Iterable<Key> {
 		for (Double aDouble : pq1) {
 			StdOut.println("dddd:" + aDouble);
 		}
-
-
-		final Double[] doubleArr2 = (Double[]) ArrayGenerator.generateRandomArray(50);
-
-		MaxPQ_My<Double> pq2 = new MaxPQ_My<>(Double.class, doubleArr2);
-		for (Comparable<Double> d : doubleArr2) {
-			pq2.insert((Double) d);
-		}
-		StdOut.println("(" + pq2.size() + " left on pq)");
 	}
 
 }

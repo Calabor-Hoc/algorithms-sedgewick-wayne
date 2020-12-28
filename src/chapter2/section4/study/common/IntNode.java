@@ -1,7 +1,7 @@
-package chapter2.section4.study.generic;
+package chapter2.section4.study.common;
 
-public class MyNode extends Node<Integer> {
-	public MyNode(Integer data) {
+public class IntNode extends Node<Integer> {
+	public IntNode(Integer data) {
 		super(data);
 	}
 
@@ -11,7 +11,7 @@ public class MyNode extends Node<Integer> {
 	}
 
 	public static void main(String[] args) {
-		MyNode mn = new MyNode(5);
+		IntNode mn = new IntNode(5);
 		Node n = mn;            // A raw type - compiler throws an unchecked warning
 		n.setData("Hello");
 		Integer x = mn.data;    // Causes a ClassCastException to be thrown.
@@ -19,16 +19,3 @@ public class MyNode extends Node<Integer> {
 
 }
 
-class Node<T> {
-
-	public T data;
-
-	public Node(T data) {
-		this.data = data;
-	}
-
-	public void setData(T data) {
-		System.out.println("Node.setData");
-		this.data = data;
-	}
-}
